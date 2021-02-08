@@ -1,6 +1,6 @@
 # Todo App
 
-[View demo here](jayash.xyz/todo)
+[View demo here](https://jayash.xyz/todo)
 
 A simple todo app based on react and styled-componenets. Uses local storage to store the to-do items.
 
