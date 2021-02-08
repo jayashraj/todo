@@ -1,5 +1,7 @@
 # Todo App
 
+[View demo here](jayash.xyz/todo)
+
 A simple todo app based on react and styled-componenets. Uses local storage to store the to-do items.
 
 I actually use this app on a secondary laptop( which is always on) to see my tasks that I have to do.
