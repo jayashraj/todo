@@ -10,19 +10,41 @@ const StyledTodo = styled.div`
 
   input {
     height: 50px;
-    width: 100%;
+    width: 99%;
     margin-top: 30px;
     font-size: 30px;
-    padding: 10px;
+
   }
 
   ul {
     list-style: none;
-    margin: 30px;
+    width: 100%;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0px;
   }
   h1 {
     color: white;
   }
+  @media all and (max-width: 480px) { 
+  padding: 20px;
+  ul {
+    margin: 10px;
+    padding:10px;
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0px;
+  }
+  input {
+    width: 90%;
+    padding: 10px;
+  }
+  }
+ 
 `;
 
 const ItemTodo = styled(motion.li)`
@@ -36,7 +58,12 @@ const ItemTodo = styled(motion.li)`
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
-  padding: 5px;
+
+
+  @media all and (max-width: 480px) {
+    width: 100%;
+    padding: 0px;
+  }
 `;
 
 const CloseButton = styled(motion.button)`
@@ -66,7 +93,9 @@ export default class Todo extends Component<Props, State> {
           { id: 2, text: "clean my room", done: false },
           { id: 3, text: "check my message", done: false },
         ],
-    idCount: 3,
+    idCount: localStorage.getItem("todoListCount")
+    ? parseInt(localStorage.getItem("todoListCount") as string)
+    :3
   };
 
   handleSubmit = (e: FormEvent) => {
@@ -84,6 +113,7 @@ export default class Todo extends Component<Props, State> {
       () => {
         console.log(this.state);
         localStorage.setItem("todoList", JSON.stringify(this.state.todoList));
+        localStorage.setItem("todoListCount", JSON.stringify(this.state.idCount));
         console.log(JSON.parse(localStorage.getItem("todoList") as string));
       }
     );
