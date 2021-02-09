@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { FormEvent } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const StyledTodo = styled.div`
   font-size: 30px;
@@ -19,7 +19,6 @@ const StyledTodo = styled.div`
   ul {
     list-style: none;
     width: 100%;
-    margin-block-start: 0em;
     margin-block-end: 0em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
@@ -63,6 +62,7 @@ const ItemTodo = styled(motion.li)`
   @media all and (max-width: 480px) {
     width: 100%;
     padding: 0px;
+    font-size: 25px;
   }
 `;
 
@@ -178,6 +178,7 @@ export default class Todo extends Component<Props, State> {
               <ItemTodo
                 initial={{ opacity: 1 }}
                 animate={{ opacity: 0.1 }}
+                exit={{ opacity: 0 }}
                 key={index}
                 onClick={this.listClick}
                 id={i.id.toString()}
@@ -199,6 +200,7 @@ export default class Todo extends Component<Props, State> {
               <ItemTodo
                 initial={{ opacity: 0.1 }}
                 animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 key={index}
                 onClick={this.listClick}
                 id={i.id.toString()}
@@ -237,7 +239,9 @@ export default class Todo extends Component<Props, State> {
               placeholder="&#x270F;"
             />
           </form>
-          <ul>{todolist}</ul>
+          <ul> <AnimatePresence>
+          {todolist}
+  </AnimatePresence></ul>
         </div>
       </StyledTodo>
     );
