@@ -4,16 +4,20 @@ import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 
 const StyledContainer = styled.div`
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
+  max-width: 100vw;
   background-color: ${(props) => props.color};
+`;
+const StyledHeading = styled.h1`
+  color: ${(props) => props.color};
 `;
 
 const StyledTodo = styled.div`
   font-size: 30px;
   text-align: center;
   padding: 60px;
-
+  max-width: 100%;
+  color: ${(props) => props.color};
   input {
     height: 50px;
     width: 99%;
@@ -29,9 +33,7 @@ const StyledTodo = styled.div`
     margin-inline-end: 0px;
     padding-inline-start: 0px;
   }
-  h1 {
-    color: white;
-  }
+
   @media all and (max-width: 480px) {
     padding: 20px;
     ul {
@@ -54,13 +56,16 @@ const ItemTodo = styled(motion.li)`
   position: relative;
   text-align: center;
   display: flex;
-  background-color: #edddd4;
+  background-color: ${(props) => props.color};
   border: 1px solid #351e29;
   min-height: 80px;
   width: 100%;
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
+  padding: 5px 0 5px 0;
+  display: flex;
+  margin-top: 5px;
 
   @media all and (max-width: 480px) {
     width: 100%;
@@ -70,7 +75,7 @@ const ItemTodo = styled(motion.li)`
 `;
 
 const CloseButton = styled(motion.button)`
-  background-color: #c44536;
+  background-color: ${(props) => props.color};
   position: absolute;
   right: 0px;
   width: 50px;
@@ -92,40 +97,26 @@ interface State {
   idCount: number;
   backgroundColor: string;
   appTitle: string;
+  appTitleColor: string;
+  itemColor: string;
+  itemFontColor: string;
+  itemCloseColor: string;
 }
 export default class Todo extends Component<Props, State> {
-  getStateFromStorage = () => {
-    let storedState = localStorage.getItem("todoAppState");
-    if (storedState) {
-      this.setState(JSON.parse(storedState));
-    } else {
-      this.setState({
-        value: "",
-        todoList: localStorage.getItem("todoList") //if list exists use it
-          ? JSON.parse(localStorage.getItem("todoList") as string)
-          : // if the user has never added an item to the app, show sample todos
-            [
-              { id: 1, text: "wash my face", done: false },
-              { id: 2, text: "clean my room", done: false },
-              { id: 3, text: "check my message", done: false },
-            ],
-        idCount: localStorage.getItem("todoListCount")
-          ? parseInt(localStorage.getItem("todoListCount") as string)
-          : 3,
-        backgroundColor: "#283d3b",
-        appTitle: "Todo App",
-      });
-    }
-  };
   state = {
     value: "",
     todoList: [],
     idCount: 0,
     backgroundColor: "#283d3b",
-    appTitle: "First Load",
+    appTitle: "Todo List",
+    appTitleColor: "white",
+    itemColor: "#edddd4",
+    itemFontColor: "black",
+    itemCloseColor: "#c44536",
   };
 
   saveStateToStorage = () => {
+    this.faviconChanger();
     console.log(this.state);
     localStorage.setItem("todoAppState", JSON.stringify(this.state));
     this.showMeState();
@@ -158,6 +149,7 @@ export default class Todo extends Component<Props, State> {
         this.clearAll(false);
       } else if (command === "color" || command === "colou") {
         console.log("color is", text.split(" ")[2]);
+
         this.setState(
           {
             value: "",
@@ -168,18 +160,70 @@ export default class Todo extends Component<Props, State> {
           }
         );
       } else if (command === "title") {
-        this.setState(
-          {
-            value: "",
-            appTitle: text.split("title")[1],
-          },
-          () => {
-            this.saveStateToStorage();
-          }
-        );
+        if (text.search(/colou?r/) >= 0) {
+          let color = text.split(" ");
+          this.setState(
+            {
+              value: "",
+              appTitleColor: color[color.length - 1],
+            },
+            () => {
+              this.saveStateToStorage();
+            }
+          );
+        } else {
+          this.setState(
+            {
+              value: "",
+              appTitle: text.split("title ")[1],
+            },
+            () => {
+              this.saveStateToStorage();
+            }
+          );
+        }
       } else if (command === "reset") {
         // Resets everything
         this.clearAll(true);
+      } else if (command === "item ") {
+        if (text.search(/colou?rs?/) >= 0) {
+          let colors = text.split(" ");
+          console.log(colors);
+          if (colors.length === 4) {
+            this.setState(
+              {
+                value: "",
+                itemColor: colors[3],
+              },
+              () => {
+                this.saveStateToStorage();
+              }
+            );
+          } else if (colors.length === 5) {
+            this.setState(
+              {
+                value: "",
+                itemColor: colors[3],
+                itemFontColor: colors[4],
+              },
+              () => {
+                this.saveStateToStorage();
+              }
+            );
+          } else if (colors.length === 6) {
+            this.setState(
+              {
+                value: "",
+                itemColor: colors[3],
+                itemFontColor: colors[4],
+                itemCloseColor: colors[5],
+              },
+              () => {
+                this.saveStateToStorage();
+              }
+            );
+          }
+        }
       } else {
         addItem();
       }
@@ -200,6 +244,10 @@ export default class Todo extends Component<Props, State> {
           idCount: 0,
           appTitle: "Todo App",
           backgroundColor: "#283d3b",
+          appTitleColor: "white",
+          itemColor: "#edddd4",
+          itemFontColor: "black",
+          itemCloseColor: "#c44536",
         },
         () => {
           this.saveStateToStorage();
@@ -273,11 +321,70 @@ export default class Todo extends Component<Props, State> {
 
     if (previousAppState) {
       this.setState(JSON.parse(previousAppState));
+    } else {
+      this.setState({
+        todoList: [
+          { id: 0, text: "Touch this item to disable it", done: false },
+          {
+            id: 1,
+            text: "type 'x color gold' to change background color",
+            done: false,
+          },
+          {
+            id: 2,
+            text: "type 'x title 💰💰` to set cutom title",
+            done: false,
+          },
+          { id: 3, text: "type 'x clear` to clear the list", done: false },
+          {
+            id: 4,
+            text: "type 'x reset' to reset app to default state",
+            done: false,
+          },
+        ],
+        idCount: 4,
+      });
     }
   };
 
   showMeState = () => {
     console.log(localStorage.getItem("todoAppState"));
+  };
+  faviconChanger = () => {
+    console.log(this.state.appTitle, this.state.appTitleColor);
+    var favicon = document.getElementById("favicon");
+    var faviconSize = 192;
+
+    var canvas = document.createElement("canvas");
+    canvas.width = faviconSize;
+    canvas.height = faviconSize;
+
+    var context = canvas.getContext("2d");
+    var img = document.createElement("img");
+
+    if (favicon) {
+      img.src = (favicon as HTMLLinkElement).href;
+
+      img.onload = () => {
+        // Draw Original Favicon as Background
+        if (context) {
+          context.drawImage(img, 0, 0, faviconSize, faviconSize);
+          let txt = this.state.appTitle[0] || "✍";
+          console.log(this.state.appTitle[0], "is txt");
+          //set background of favicon from the app bakground
+          context.fillStyle = this.state.backgroundColor;
+          context.fillRect(0, 0, 192, 192);
+          //first char from your title
+          context.font = "148px serif";
+          context.fillStyle = this.state.appTitleColor;
+          context.textBaseline = "middle";
+          context.textAlign = "center";
+          context.fillText(txt, faviconSize / 2, faviconSize / 2);
+          // Replace favicon
+          (favicon as HTMLLinkElement).href = canvas.toDataURL("image/png");
+        }
+      };
+    }
   };
   render() {
     let todolist;
@@ -287,16 +394,17 @@ export default class Todo extends Component<Props, State> {
           if (i.done) {
             return (
               <ItemTodo
+                color={this.state.itemColor}
                 initial={{ opacity: 1 }}
                 animate={{ opacity: 0.1 }}
                 exit={{ opacity: 0 }}
                 key={index}
                 onClick={this.listClick}
                 id={i.id.toString()}
-                style={{ display: "flex", marginTop: 5 }}
               >
                 {i.text}
                 <CloseButton
+                  color={this.state.itemCloseColor}
                   key={index + "-button"}
                   onClick={this.deleteItem}
                   id={"button-" + i.id.toString()}
@@ -309,16 +417,17 @@ export default class Todo extends Component<Props, State> {
           } else {
             return (
               <ItemTodo
+                color={this.state.itemColor}
                 initial={{ opacity: 0.1 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 key={index}
                 onClick={this.listClick}
                 id={i.id.toString()}
-                style={{ display: "flex", marginTop: 5 }}
               >
                 {i.text}
                 <CloseButton
+                  color={this.state.itemCloseColor}
                   key={index + "button"}
                   id={"button-" + i.id.toString()}
                   onClick={this.deleteItem}
@@ -337,9 +446,11 @@ export default class Todo extends Component<Props, State> {
 
     return (
       <StyledContainer color={this.state.backgroundColor}>
-        <StyledTodo>
+        <StyledTodo color={this.state.itemFontColor}>
           <div className="container">
-            <h1>{this.state.appTitle}</h1>
+            <StyledHeading color={this.state.appTitleColor}>
+              {this.state.appTitle}
+            </StyledHeading>
             <form onSubmit={this.handleSubmit}>
               <input
                 onSubmit={this.handleSubmit}
