@@ -116,6 +116,7 @@ export default class Todo extends Component<Props, State> {
   };
 
   saveStateToStorage = () => {
+    document.title = this.state.appTitle;
     this.faviconChanger();
     console.log(this.state);
     localStorage.setItem("todoAppState", JSON.stringify(this.state));
