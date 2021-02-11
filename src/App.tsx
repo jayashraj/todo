@@ -118,7 +118,7 @@ export default class Todo extends Component<Props, State> {
   saveStateToStorage = () => {
     document.title = this.state.appTitle;
     this.faviconChanger();
-    console.log(this.state);
+
     localStorage.setItem("todoAppState", JSON.stringify(this.state));
     this.showMeState();
   };
@@ -157,6 +157,11 @@ export default class Todo extends Component<Props, State> {
             backgroundColor: text.split(" ")[2],
           },
           () => {
+            if (document.getElementById("status-bar")) {
+              let statusBar = document.getElementById("status-bar");
+              (statusBar as HTMLMetaElement).content = this.state.backgroundColor;
+            }
+
             this.saveStateToStorage();
           }
         );
