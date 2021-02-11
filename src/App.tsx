@@ -382,6 +382,8 @@ export default class Todo extends Component<Props, State> {
           context.fillText(txt, faviconSize / 2, faviconSize / 2);
           // Replace favicon
           (favicon as HTMLLinkElement).href = canvas.toDataURL("image/png");
+          let homeScreen = document.getElementById("home-screen");
+          (homeScreen as HTMLLinkElement).href = canvas.toDataURL("image/png");
         }
       };
     }
